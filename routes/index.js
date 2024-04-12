@@ -3,8 +3,8 @@ var app = express({ caseSensitive: true });
 // var http = require("http");
 // var server = http.createServer(app);
 // var io = require("socket.io");
-var Mg = require("mongodb").MongoClient;
-// const { MongoClient } = require('mongodb')
+// var Mg = require("mongodb").MongoClient;
+var Mg = require("mongodb-legacy").MongoClient;
 var cp = require("cookie-parser")
 var cors = require("cors");
 const formidable = require('formidable');
@@ -266,7 +266,7 @@ console.log(url);
     //     res.end()
     // })
 
-    app.get("/login", async (req, res) => {
+    app.get("/login", (req, res) => {
         // console.log(req.body);
 
         var a1 = req.query.number;
@@ -278,79 +278,79 @@ console.log(url);
         // console.log(a1, a2);//number
 
 
-        const result = await dbo.collection("nums").find({}, { projection: { _id: 0 } }).toArray()
-        // console.log(result);
+        const result = dbo.collection("nums").find({}, { projection: { _id: 0 } }).toArray((err, result) => {
+            // console.log(result);
 
-        if (result.length == 0) {
-            console.log("Account not exsist");
-            res.render("a", dodo = { a: 2 });
-        }
-        for (var loop1 = 0; loop1 < result.length; loop1++) {
-            if (a1 == result[loop1].number) {
-                if (a2 == result[loop1].pin) {
+            if (result.length == 0) {
+                console.log("Account not exsist");
+                res.render("a", dodo = { a: 2 });
+            }
+            for (var loop1 = 0; loop1 < result.length; loop1++) {
+                if (a1 == result[loop1].number) {
+                    if (a2 == result[loop1].pin) {
 
-                    if (a3 == 'on') { // saving cookies
-                        var expiryDate = Number(new Date()) + 3.1536e+10; //expire after one year 
-                        var expiryDate = new Date(expiryDate)
-                        console.log(expiryDate);
+                        if (a3 == 'on') { // saving cookies
+                            var expiryDate = Number(new Date()) + 3.1536e+10; //expire after one year 
+                            var expiryDate = new Date(expiryDate)
+                            console.log(expiryDate);
 
-                        let users = {
-                            number: a1,
-                            password: a2,
-                            idn: "adhfkjk"
-                        }
-                        res.cookie("users", users, { expires: expiryDate })
-                        // res.redirect("http://localhost:3000")
-                    }
-                    else {
-                        var expiryDate = Number(new Date()) + 3.6e+6; //expire after one hour
-                        var expiryDate = new Date(expiryDate)
-                        console.log(expiryDate);
-
-                        let users = {
-                            number: a1,
-                            password: a2,
-                            idn: "boom"
-                        }
-                        res.cookie("users", users, { expires: expiryDate })
-                    }
-                    try {
-
-                        if (result[loop1].firstName) {
-                            res.redirect("http://localhost:3000")
-                            console.log("try");
-                            // res.render("index", din = { a: result[loop1].firstName, b: "", ind: 1 })
+                            let users = {
+                                number: a1,
+                                password: a2,
+                                idn: "adhfkjk"
+                            }
+                            res.cookie("users", users, { expires: expiryDate })
+                            // res.redirect("http://localhost:3000")
                         }
                         else {
-                            console.log("try else");
+                            var expiryDate = Number(new Date()) + 3.6e+6; //expire after one hour
+                            var expiryDate = new Date(expiryDate)
+                            console.log(expiryDate);
+
+                            let users = {
+                                number: a1,
+                                password: a2,
+                                idn: "boom"
+                            }
+                            res.cookie("users", users, { expires: expiryDate })
+                        }
+                        try {
+
+                            if (result[loop1].firstName) {
+                                res.redirect("http://localhost:3000")
+                                console.log("try");
+                                // res.render("index", din = { a: result[loop1].firstName, b: "", ind: 1 })
+                            }
+                            else {
+                                console.log("try else");
+                                res.render("index", din = { a: "", b: "", ind: 0 })
+                            }
+                        } catch {
+                            console.log("catch");
+
+                            // res.redirect("http://localhost:3000")
                             res.render("index", din = { a: "", b: "", ind: 0 })
                         }
-                    } catch {
-                        console.log("catch");
-
-                        // res.redirect("http://localhost:3000")
-                        res.render("index", din = { a: "", b: "", ind: 0 })
+                    }
+                    else {
+                        console.log("wrong login details");
+                        res.render("a", dodo = { a: 2.2 });
                     }
                 }
-                else {
-                    console.log("wrong login details");
-                    res.render("a", dodo = { a: 2.2 });
+                if (loop1 == result.length - 1) {
+                    // console.log("ye chla");
+                    if (a1 != result[loop1].number || a2 != result[loop1].pin) {
+                        // console.log(a1, a2);
+                        // console.log(result[loop1].a, result[loop1].b);
+                        // console.log("ye chla2");
+
+                        console.log("Account not exsist");
+                        res.render("a", dodo = { a: 2 });
+                    }
                 }
             }
-            if (loop1 == result.length - 1) {
-                // console.log("ye chla");
-                if (a1 != result[loop1].number || a2 != result[loop1].pin) {
-                    // console.log(a1, a2);
-                    // console.log(result[loop1].a, result[loop1].b);
-                    // console.log("ye chla2");
 
-                    console.log("Account not exsist");
-                    res.render("a", dodo = { a: 2 });
-                }
-            }
-        }
-
-
+        })
 
         // dbo.collection("nums").deleteMany({ a: /^[0-9]/ }, () => {
         //     console.log("deleted");
